@@ -1,0 +1,217 @@
+{
+  "indicators": {
+    "MovingAverage": {
+      "description": "Simple or Exponential Moving Average",
+      "params": {
+        "window": {"type": "int", "range": [1, 200]},
+        "source": {"type": "string", "options": ["price.close", "price.open", "price.high", "price.low"]},
+        "ma_type": {"type": "string", "options": ["sma", "ema"], "default": "sma"}
+      },
+      "output_schema": {
+        "indicator": "moving_average",
+        "type": "{{ma_type}}",
+        "period": "{{window}}",
+        "field": "{{source}}"
+      }
+    },
+    "RSI": {
+      "description": "Relative Strength Index",
+      "params": {
+        "period": {"type": "int", "range": [2, 50], "default": 14},
+        "source": {"type": "string", "options": ["price.close"], "default": "price.close"}
+      },
+      "output_schema": {
+        "indicator": "rsi",
+        "period": "{{period}}",
+        "field": "{{source}}"
+      }
+    },
+    "MACD": {
+      "description": "Moving Average Convergence Divergence",
+      "params": {
+        "fast_period": {"type": "int", "default": 12},
+        "slow_period": {"type": "int", "default": 26},
+        "signal_period": {"type": "int", "default": 9}
+      },
+      "output_schema": {
+        "indicator": "macd",
+        "fast": "{{fast_period}}",
+        "slow": "{{slow_period}}",
+        "signal": "{{signal_period}}"
+      }
+    },
+    "BollingerBands": {
+      "description": "Bollinger Bands indicator",
+      "params": {
+        "period": {"type": "int", "default": 20},
+        "std_dev": {"type": "float", "default": 2.0}
+      },
+      "output_schema": {
+        "indicator": "bollinger_bands",
+        "period": "{{period}}",
+        "std_deviation": "{{std_dev}}"
+      }
+    },
+    "ATR": {
+      "description": "Average True Range",
+      "params": {
+        "period": {"type": "int", "default": 14}
+      },
+      "output_schema": {
+        "indicator": "atr",
+        "period": "{{period}}"
+      }
+    },
+    "Stochastic": {
+      "description": "Stochastic Oscillator",
+      "params": {
+        "k_period": {"type": "int", "default": 14},
+        "d_period": {"type": "int", "default": 3}
+      },
+      "output_schema": {
+        "indicator": "stochastic",
+        "k": "{{k_period}}",
+        "d": "{{d_period}}"
+      }
+    },
+    "ADX": {
+      "description": "Average Directional Index",
+      "params": {
+        "period": {"type": "int", "default": 14}
+      },
+      "output_schema": {
+        "indicator": "adx",
+        "period": "{{period}}"
+      }
+    },
+    "OBV": {
+      "description": "On Balance Volume",
+      "params": {},
+      "output_schema": {
+        "indicator": "obv"
+      }
+    }
+  },
+  "conditions": {
+    "PriceThreshold": {
+      "description": "Price crosses threshold",
+      "params": {
+        "threshold": {"type": "float"},
+        "operator": {"type": "string", "options": ["above", "below", "crosses_above", "crosses_below"]}
+      },
+      "output_schema": {
+        "condition": "price_threshold",
+        "value": "{{threshold}}",
+        "operator": "{{operator}}"
+      }
+    },
+    "IndicatorThreshold": {
+      "description": "Indicator crosses threshold",
+      "params": {
+        "indicator": {"type": "string"},
+        "threshold": {"type": "float"},
+        "operator": {"type": "string", "options": ["above", "below", "crosses_above", "crosses_below"]}
+      },
+      "output_schema": {
+        "condition": "indicator_threshold",
+        "indicator": "{{indicator}}",
+        "value": "{{threshold}}",
+        "operator": "{{operator}}"
+      }
+    },
+    "VolumeSpike": {
+      "description": "Volume exceeds average by multiplier",
+      "params": {
+        "multiplier": {"type": "float", "default": 1.5},
+        "period": {"type": "int", "default": 20}
+      },
+      "output_schema": {
+        "condition": "volume_spike",
+        "multiplier": "{{multiplier}}",
+        "avg_period": "{{period}}"
+      }
+    },
+    "PriceCrossover": {
+      "description": "Two prices or indicators cross",
+      "params": {
+        "source_a": {"type": "string"},
+        "source_b": {"type": "string"},
+        "direction": {"type": "string", "options": ["bullish", "bearish", "any"]}
+      },
+      "output_schema": {
+        "condition": "crossover",
+        "fast": "{{source_a}}",
+        "slow": "{{source_b}}",
+        "direction": "{{direction}}"
+      }
+    },
+    "CompositeCondition": {
+      "description": "Combine multiple conditions",
+      "params": {
+        "operator": {"type": "string", "options": ["AND", "OR"]},
+        "conditions": {"type": "array"}
+      },
+      "output_schema": {
+        "condition": "composite",
+        "logic": "{{operator}}",
+        "sub_conditions": "{{conditions}}"
+      }
+    }
+  },
+  "strategies": {
+    "MACrossover": {
+      "description": "Moving Average Crossover Strategy",
+      "params": {
+        "fast_period": {"type": "int", "default": 10},
+        "slow_period": {"type": "int", "default": 20},
+        "signal_type": {"type": "string", "options": ["entry", "exit", "both"], "default": "both"}
+      },
+      "output_schema": {
+        "strategy": "ma_crossover",
+        "fast_ma": "{{fast_period}}",
+        "slow_ma": "{{slow_period}}",
+        "signals": "{{signal_type}}"
+      }
+    },
+    "RSIMeanReversion": {
+      "description": "RSI Mean Reversion Strategy",
+      "params": {
+        "oversold": {"type": "int", "default": 30},
+        "overbought": {"type": "int", "default": 70},
+        "period": {"type": "int", "default": 14}
+      },
+      "output_schema": {
+        "strategy": "rsi_mean_reversion",
+        "rsi_period": "{{period}}",
+        "buy_below": "{{oversold}}",
+        "sell_above": "{{overbought}}"
+      }
+    },
+    "BreakoutStrategy": {
+      "description": "Price breakout from range",
+      "params": {
+        "lookback_period": {"type": "int", "default": 20},
+        "breakout_threshold": {"type": "float", "default": 0.02}
+      },
+      "output_schema": {
+        "strategy": "breakout",
+        "period": "{{lookback_period}}",
+        "threshold_pct": "{{breakout_threshold}}"
+      }
+    },
+    "TrendFollowing": {
+      "description": "Trend following with ADX and MA",
+      "params": {
+        "adx_period": {"type": "int", "default": 14},
+        "adx_threshold": {"type": "int", "default": 25},
+        "ma_period": {"type": "int", "default": 50}
+      },
+      "output_schema": {
+        "strategy": "trend_following",
+        "adx_period": "{{adx_period}}",
+        "adx_min": "{{adx_threshold}}",
+        "ma_period": "{{ma_period}}"
+      }
+    }
+  }
+}
